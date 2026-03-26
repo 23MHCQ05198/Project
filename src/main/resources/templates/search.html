@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Student Result</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #74ebd5, #9face6);
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            animation: fadeIn 1s ease-in;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input {
+            padding: 10px;
+            border-radius: 25px;
+            border: none;
+            outline: none;
+            width: 220px;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            box-shadow: 0 0 8px #3498db;
+        }
+
+        button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #3498db, #6dd5fa);
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #2980b9, #4facfe);
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 85%;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            animation: slideUp 0.8s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f6ff;
+        }
+
+        tr:hover {
+            background-color: #dfe9ff;
+            transition: 0.3s;
+        }
+
+        td[rowspan] {
+            font-weight: bold;
+            background: #eef3ff;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+<h2>Student Result</h2>
+
+<form action="/result" method="get">
+    <input type="text" name="roll" placeholder="Enter Roll Number" required>
+    <button type="submit">Search</button>
+</form>
+
+<table border="1" th:if="${students != null and #lists.size(students) > 0}">
+
+    <tr>
+        <th>Roll Number</th>
+        <th>Name</th>
+        <th colspan="4">Semester 1</th>
+        <th colspan="4">Semester 2</th>
+    </tr>
+
+    <tr>
+        <td rowspan="2" th:text="${students[0].rollNumber}"></td>
+        <td rowspan="2" th:text="${students[0].name}"></td>
+
+        <th>Python</th>
+        <th>Java</th>
+        <th>C</th>
+        <th>HTML/CSS</th>
+
+        <th>JavaScript</th>
+        <th>DevOps</th>
+        <th>CC</th>
+        <th>CNS</th>
+    </tr>
+
+    <tr>
+        <td><span th:each="s : ${students}" th:if="${s.semester == 1}" th:text="${s.python}"></span></td>
+        <td><span th:each="s : ${students}" th:if="${s.semester == 1}" th:text="${s.java}"></span></td>
+        <td><span th:each="s : ${students}" th:if="${s.semester == 1}" th:text="${s.c}"></span></td>
+        <td><span th:each="s : ${students}" th:if="${s.semester == 1}" th:text="${s.htmlCss}"></span></td>
+
+        <td><span th:each="s : ${students}" th:if="${s.semester == 2}" th:text="${s.javascript}"></span></td>
+        <td><span th:each="s : ${students}" th:if="${s.semester == 2}" th:text="${s.devops}"></span></td>
+        <td><span th:each="s : ${students}" th:if="${s.semester == 2}" th:text="${s.cc}"></span></td>
+        <td><span th:each="s : ${students}" th:if="${s.semester == 2}" th:text="${s.cns}"></span></td>
+    </tr>
+
+</table>
+
+</body>
+</html>
