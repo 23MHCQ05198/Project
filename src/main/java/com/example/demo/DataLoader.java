@@ -1,6 +1,5 @@
 package com.example.demo;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -15,7 +14,7 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        excelService.loadExcel();
+        excelService.loadExcelFromFile();  // ✅ clean
         System.out.println("Excel data loaded into database");
     }
 }

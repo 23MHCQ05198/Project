@@ -1,7 +1,5 @@
 package com.example.demo.Config;
 
-
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,11 +14,14 @@ public class Securityconfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/upload", "/search", "/result").permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers("/", "/upload", "/search").permitAll() // public pages
+                .anyRequest().authenticated() // others need login
             )
             .formLogin(form -> form
-                .defaultSuccessUrl("/", true)
+                .defaultSuccessUrl("/upload", true) // redirect to upload after login
+            )
+            .logout(logout -> logout
+                .logoutSuccessUrl("/") // redirect to home after logout
             );
 
         return http.build();

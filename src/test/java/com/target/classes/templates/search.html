@@ -3,6 +3,7 @@
 
 <head>
     <title>Student Result</title>
+
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -91,22 +92,29 @@
         }
 
         @keyframes slideUp {
-            from {transform: translateY(30px); opacity: 0;}
-            to {transform: translateY(0); opacity: 1;}
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
     </style>
+
 </head>
 
 <body>
 
 <h2>Student Result</h2>
 
-<form action="/search" method="get">
+<form action="/result" method="get">
     <input type="text" name="roll" placeholder="Enter Roll Number" required>
     <button type="submit">Search</button>
 </form>
 
-<table th:if="${students != null and #lists.size(students) > 0}">
+<table border="1" th:if="${students != null and #lists.size(students) > 0}">
 
     <tr>
         <th>Roll Number</th>
