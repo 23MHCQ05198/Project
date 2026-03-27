@@ -21,7 +21,7 @@ public class WebController {
     @Autowired
     private ExcelService excelService;
 
-    // Redirect root URL to upload page
+    // Root redirect to upload page
     @GetMapping("/")
     public String rootRedirect() {
         return "redirect:/upload";
@@ -33,11 +33,50 @@ public class WebController {
         return "upload"; // upload.html
     }
 
-    // Handle Excel upload
+    // Handle Excel upload → redirect to success page
     @PostMapping("/upload")
     public String uploadExcel(@RequestParam("file") MultipartFile file) {
         excelService.loadExcel(file);
-        return "redirect:/search"; // after upload, go to search
+        return "success"; // success.html
+    }
+
+    // Add student manually form
+    @PostMapping("/success")
+    public String saveStudent(
+            @RequestParam String rollNumber,
+            @RequestParam String name,
+            @RequestParam(required = false) Integer py,
+            @RequestParam(required = false) Integer ja,
+            @RequestParam(required = false) Integer c,
+            @RequestParam(required = false) Integer html,
+            @RequestParam(required = false) Integer js,
+            @RequestParam(required = false) Integer dev,
+            @RequestParam(required = false) Integer cc,
+            @RequestParam(required = false) Integer cns
+    ) {
+        Student s1 = new Student();
+        s1.setRollNumber(rollNumber);
+        s1.setName(name);
+
+        s1.setSemester(1);
+        s1.setPython(py != null ? py : 0);
+        s1.setJava(ja != null ? ja : 0);
+        s1.setC(c != null ? c : 0);
+        s1.setHtmlCss(html != null ? html : 0);
+        studentService.save(s1);
+
+        Student s2 = new Student();
+        s2.setRollNumber(rollNumber);
+        s2.setName(name);
+
+        s2.setSemester(2);
+        s2.setJavascript(js != null ? js : 0);
+        s2.setDevops(dev != null ? dev : 0);
+        s2.setCc(cc != null ? cc : 0);
+        s2.setCns(cns != null ? cns : 0);
+        studentService.save(s2);
+
+        return "redirect:/search"; // after save, go to search page
     }
 
     // Search page
