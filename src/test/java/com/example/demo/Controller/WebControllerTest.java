@@ -21,7 +21,7 @@ import com.example.demo.Service.ExcelService;
 import com.example.demo.Service.StudentService;
 
 @WebMvcTest(WebController.class)
-@AutoConfigureMockMvc(addFilters = false) // DISABLE SECURITY FILTERS
+@AutoConfigureMockMvc(addFilters = false)
 public class WebControllerTest {
 
     @Autowired
@@ -33,6 +33,7 @@ public class WebControllerTest {
     @MockBean
     private ExcelService excelService;
 
+    // ✅ Test root redirect
     @Test
     void testRootRedirect() throws Exception {
         mockMvc.perform(get("/"))
@@ -40,30 +41,44 @@ public class WebControllerTest {
                 .andExpect(redirectedUrl("/upload"));
     }
 
+    // ✅ Test upload page GET
     @Test
-    void testUploadPageGet() throws Exception {
+    void testUploadPage() throws Exception {
         mockMvc.perform(get("/upload"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("upload"));
     }
 
+    // ✅ Test upload Excel POST → redirect to /add
     @Test
-    void testUploadExcelPost() throws Exception {
+    void testUploadExcel() throws Exception {
         MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "student.xlsx",
+                "students.xlsx",
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                new byte[]{1, 2, 3} // dummy content
+                new byte[]{1, 2, 3}
         );
 
         mockMvc.perform(multipart("/upload").file(file))
-                .andExpect(status().isOk()) // now returns "success" view, not redirect
-                .andExpect(view().name("success"));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/add"));
+
+        // verify service called
+        Mockito.verify(excelService, Mockito.times(1)).loadExcel(Mockito.any());
     }
 
+    // ✅ Test add page GET
     @Test
-    void testSaveStudentPost() throws Exception {
-        mockMvc.perform(post("/success")
+    void testAddPage() throws Exception {
+        mockMvc.perform(get("/add"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("add"));
+    }
+
+    // ✅ Test save student → redirect to success
+    @Test
+    void testSaveStudent() throws Exception {
+        mockMvc.perform(post("/add")
                         .param("rollNumber", "101")
                         .param("name", "Ramya")
                         .param("py", "80")
@@ -75,20 +90,30 @@ public class WebControllerTest {
                         .param("cc", "60")
                         .param("cns", "65"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/search"));
+                .andExpect(redirectedUrl("/success"));
 
-        // Verify studentService.save is called twice (sem 1 & sem 2)
+        // two saves (sem1 + sem2)
         Mockito.verify(studentService, Mockito.times(2)).save(Mockito.any(Student.class));
     }
 
+    // ✅ Test success page
     @Test
-    void testSearchPageNoRoll() throws Exception {
+    void testSuccessPage() throws Exception {
+        mockMvc.perform(get("/success"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("success"));
+    }
+
+    // ✅ Test search page without roll
+    @Test
+    void testSearchPageWithoutRoll() throws Exception {
         mockMvc.perform(get("/search"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("search"))
-                .andExpect(model().attribute("students", (Object) null));
+                .andExpect(model().attributeDoesNotExist("students"));
     }
 
+    // ✅ Test search page with roll
     @Test
     void testSearchPageWithRoll() throws Exception {
         Student s = new Student();

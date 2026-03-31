@@ -21,27 +21,32 @@ public class WebController {
     @Autowired
     private ExcelService excelService;
 
-    // Root redirect to upload page
+    // Step 1: Upload page
     @GetMapping("/")
     public String rootRedirect() {
         return "redirect:/upload";
     }
 
-    // Upload page
     @GetMapping("/upload")
     public String uploadPage() {
-        return "upload"; // upload.html
+        return "upload";
     }
 
-    // Handle Excel upload → redirect to success page
+    // Step 2: Upload Excel → go to manual form
     @PostMapping("/upload")
     public String uploadExcel(@RequestParam("file") MultipartFile file) {
         excelService.loadExcel(file);
-        return "success"; // success.html
+        return "redirect:/add";   // 🔥 go to manual form
     }
 
-    // Add student manually form
-    @PostMapping("/success")
+    // Step 3: Manual marks form
+    @GetMapping("/add")
+    public String addPage() {
+        return "add";   // your form page
+    }
+
+    // Step 4: Save manual marks → success
+    @PostMapping("/add")
     public String saveStudent(
             @RequestParam String rollNumber,
             @RequestParam String name,
@@ -54,10 +59,10 @@ public class WebController {
             @RequestParam(required = false) Integer cc,
             @RequestParam(required = false) Integer cns
     ) {
+
         Student s1 = new Student();
         s1.setRollNumber(rollNumber);
         s1.setName(name);
-
         s1.setSemester(1);
         s1.setPython(py != null ? py : 0);
         s1.setJava(ja != null ? ja : 0);
@@ -68,7 +73,6 @@ public class WebController {
         Student s2 = new Student();
         s2.setRollNumber(rollNumber);
         s2.setName(name);
-
         s2.setSemester(2);
         s2.setJavascript(js != null ? js : 0);
         s2.setDevops(dev != null ? dev : 0);
@@ -76,15 +80,24 @@ public class WebController {
         s2.setCns(cns != null ? cns : 0);
         studentService.save(s2);
 
-        return "redirect:/search"; // after save, go to search page
+        return "redirect:/success";
     }
 
-    // Search page
+    // Step 5: Success page
+    @GetMapping("/success")
+    public String successPage() {
+        return "success";
+    }
+
+    // Step 6: Search page
     @GetMapping("/search")
     public String search(@RequestParam(required = false) String roll, Model model) {
-        List<Student> students = (roll != null && !roll.isEmpty()) ?
-                studentService.getByRoll(roll) : null;
-        model.addAttribute("students", students);
-        return "search"; // search.html
+
+        if (roll != null && !roll.isEmpty()) {
+            List<Student> students = studentService.getByRoll(roll);
+            model.addAttribute("students", students);
+        }
+
+        return "search";
     }
 }
