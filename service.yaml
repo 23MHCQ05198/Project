@@ -1,0 +1,11 @@
+piVersion: v1
+kind: Service
+metadata:
+  name: project1
+spec:
+  selector:
+    deployment: project1
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
