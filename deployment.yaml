@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: project1
+  template:
+    metadata:
+      labels:
+        app: project1
+    spec:
+      containers:
+        - name: project1
+          image: ramya3025/project:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://mysql:3306/project?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+
+            - name: SPRING_DATASOURCE_USERNAME
+              value: ramya
+
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: ramya123
+
+            - name: SPRING_JPA_DATABASE_PLATFORM
+              value: org.hibernate.dialect.MySQLDialect
